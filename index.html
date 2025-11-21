@@ -207,8 +207,7 @@
     </div>
 
     <script>
-        // *** 🚨 CRITICAL: UPDATE THIS URL 🚨 ***
-        // Replace 'https://xyz.com/auth.php' with the actual URL where you host your auth.php file.
+        // *** CRITICAL: BACKEND URL CONFIRMED TO BE HTTPS ***
         const BACKEND_URL = 'https://mindease.gt.tc/auth.php'; 
         
         const container = document.getElementById('container');
@@ -257,6 +256,7 @@
                 // Fetch request to the remote PHP server
                 const response = await fetch(BACKEND_URL, {
                     method: 'POST',
+                    mode: 'cors', // <--- FINAL FIX: EXPLICITLY SETTING CORS MODE
                     body: formData
                 });
 
@@ -269,7 +269,7 @@
                 if (result.success) {
                     // Successful action
                     if (!isSignup) {
-                        // Successful login: Save user info in browser's session and redirect
+                        // Successful login: Save user info and redirect
                         sessionStorage.setItem('user_id', result.user_id);
                         sessionStorage.setItem('user_name', result.full_name);
                         alert(`Login successful! Welcome, ${result.full_name}.`);
