@@ -207,9 +207,9 @@
     </div>
 
     <script>
-        // *** IMPORTANT: REPLACE THIS URL WITH THE ACTUAL PATH TO YOUR auth.php FILE ON YOUR XYZ SERVER ***
-        const BACKEND_URL = 'https://xyz.com/auth.php'; 
-        // Example: If you host it on the same domain as your old PHP, it might be 'https://mindease.puter.site/auth.php'
+        // *** 🚨 CRITICAL: UPDATE THIS URL 🚨 ***
+        // Replace 'https://xyz.com/auth.php' with the actual URL where you host your auth.php file.
+        const BACKEND_URL = 'https://mindease.gt.tc/auth.php'; 
         
         const container = document.getElementById('container');
         const registerBtn = document.getElementById('register-btn');
@@ -222,13 +222,13 @@
         // --- UI TOGGLE LOGIC ---
         registerBtn.addEventListener('click', () => {
             container.classList.add("active");
-            signupErrorDiv.style.display = 'none'; // Clear error on switch
+            signupErrorDiv.style.display = 'none'; 
             loginErrorDiv.style.display = 'none';
         });
 
         loginBtn.addEventListener('click', () => {
             container.classList.remove("active");
-            signupErrorDiv.style.display = 'none'; // Clear error on switch
+            signupErrorDiv.style.display = 'none'; 
             loginErrorDiv.style.display = 'none';
         });
 
@@ -237,26 +237,27 @@
             element.innerHTML = `<i class="fa-solid fa-circle-exclamation"></i> ${message}`;
             element.style.display = 'block';
             if (isSignup) {
-                container.classList.add("active"); // Keep/switch to signup tab on error
+                container.classList.add("active");
             }
         }
         
         // --- ASYNC REQUEST HANDLER ---
-        async function sendAuthRequest(endpoint, data, isSignup) {
+        async function sendAuthRequest(data, isSignup) {
             const errorElement = isSignup ? signupErrorDiv : loginErrorDiv;
             errorElement.style.display = 'none';
 
-            // Use FormData to mimic the original POST request structure
             const formData = new FormData();
             for (const key in data) {
                 formData.append(key, data[key]);
             }
-            formData.append(isSignup ? 'signup' : 'signin', '1');
+            // Tells the PHP script which action to perform
+            formData.append(isSignup ? 'signup' : 'signin', '1'); 
 
             try {
+                // Fetch request to the remote PHP server
                 const response = await fetch(BACKEND_URL, {
                     method: 'POST',
-                    body: formData // Sends data as application/x-www-form-urlencoded (PHP standard)
+                    body: formData
                 });
 
                 if (!response.ok) {
@@ -268,10 +269,11 @@
                 if (result.success) {
                     // Successful action
                     if (!isSignup) {
-                        // Successful login
+                        // Successful login: Save user info in browser's session and redirect
                         sessionStorage.setItem('user_id', result.user_id);
                         sessionStorage.setItem('user_name', result.full_name);
-                        window.location.href = result.redirect || "https://mindease.puter.site/";
+                        alert(`Login successful! Welcome, ${result.full_name}.`);
+                        window.location.href = result.redirect; 
                     } else {
                         // Successful signup
                         alert("Signup successful! Please sign in now.");
@@ -285,7 +287,7 @@
 
             } catch (error) {
                 console.error('Fetch error:', error);
-                displayError(errorElement, "A connection error occurred. Please check the backend server.", isSignup);
+                displayError(errorElement, "A connection error occurred. Check the console for CORS or network issues.", isSignup);
             }
         }
 
@@ -297,7 +299,7 @@
                 email: document.getElementById('signup-email').value.trim(),
                 password: document.getElementById('signup-password').value,
             };
-            sendAuthRequest('signup', data, true);
+            sendAuthRequest(data, true);
         });
 
         // --- SIGNIN EVENT LISTENER ---
@@ -307,7 +309,7 @@
                 email: document.getElementById('signin-email').value.trim(),
                 password: document.getElementById('signin-password').value,
             };
-            sendAuthRequest('signin', data, false);
+            sendAuthRequest(data, false);
         });
     </script>
 </body>
